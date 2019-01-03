@@ -22,27 +22,31 @@ window.onload = function() {
 
     var game_ = new Game(900, 1600); 
     game_.fps = 24; 
-    game_.preload('./img/素材/ui/title.png'); 
-	game_.preload('./img/素材/ui/tap.png'); 
-    game_.preload('./img/素材/ui/tap2.png'); 
-    game_.preload('./img/素材/ui/waku.png'); 
-    game_.preload('./img/素材/ui/retry.png'); 
-	game_.preload('./img/素材/3/背景3.png'); 
-	game_.preload('./img/素材/3/オブジェクト1.png'); 
-	game_.preload('./img/素材/3/オブジェクト2.png'); 
+    game_.preload('./img/stage/ui/title.png'); 
+	game_.preload('./img/stage/ui/tap.png'); 
+    game_.preload('./img/stage/ui/tap2.png'); 
+    game_.preload('./img/stage/ui/waku.png'); 
+    game_.preload('./img/stage/ui/retry.png'); 
+	game_.preload('./img/stage/3/bg.png'); 
+	game_.preload('./img/stage/3/obj1.png'); 
+	game_.preload('./img/stage/3/obj2.png'); 
 	game_.preload('./img/horiko.png'); 
-	game_.preload('./img/ホコリ動きpng/ホリコ　動き　2.0.png'); 
-    game_.preload('./img/ari.png');
-    game_.preload('./img/nasi.png');
-    game_.preload('./img/BGM.png');
+    game_.preload('./img/stage/ui/ari.png');
+    game_.preload('./img/stage/ui/nasi.png');
+    game_.preload('./img/stage/ui/BGM.png');
     var score=0;
 
     moveStageToCenter(game_);
     
-    var audioElem;
-    audioElem = new Audio();
-    audioElem.src = "./sound/sample.wav";
-    audioElem.loop = true;
+    
+    var audio_intro;
+    audio_intro = new Audio();
+    audio_intro.src = "./sound/horiko_stage3_bgm_intro.wav";
+    audio_intro.loop = false;
+    var audio_loop;
+    audio_loop = new Audio();
+    audio_loop.src = "./sound/horiko_stage3_bgm_loop.wav";
+    audio_loop.loop = true;
 
     game_.onload = function() { 
 
@@ -51,13 +55,13 @@ window.onload = function() {
             score=0;
             var scene = new Scene();                    
             var bg1 = new Sprite(900, 1600);            
-			bg1.image = game_.assets['./img/素材/3/背景3.png']; 
+			bg1.image = game_.assets['./img/stage/3/bg.png']; 
 			bg1.x = 0;                                 
 			bg1.y = 0;                                 
 			scene.addChild(bg1); 
             
             var pillar = new Sprite(900, 1600);        
-			pillar.image = game_.assets['./img/素材/3/オブジェクト1.png']; 
+			pillar.image = game_.assets['./img/stage/3/obj1.png']; 
 			pillar.x = -400;                                 
 			pillar.y = -400;                                 
 			pillar.scale(1.3,1.3);
@@ -65,13 +69,13 @@ window.onload = function() {
 
 
             var title = new Sprite(225, 195);          
-			title.image = game_.assets['./img/素材/ui/title.png']; 
+			title.image = game_.assets['./img/stage/ui/title.png']; 
 			title.x = 640;                                 
 			title.y = 40;                                 
 			scene.addChild(title); 
 
             var tap = new Sprite(327, 144);            
-			tap.image = game_.assets['./img/素材/ui/tap.png']; 
+			tap.image = game_.assets['./img/stage/ui/tap.png']; 
 			tap.x = 400;                                 
 			tap.y = 500;                                 
             tap.scale(1.6,1.6);
@@ -93,6 +97,14 @@ window.onload = function() {
                 game_.replaceScene(GameScene());   
             });
             
+
+             
+            scene.addEventListener(Event.ENTER_FRAME, function() {
+                    
+                if(audio_intro.ended){
+                    audio_loop.play();
+                }
+            });
             return scene;
         };
 
@@ -101,11 +113,11 @@ window.onload = function() {
             var scene = new Scene();
             
 
-            var SCROLL_SPEED = 15;
+            var SCROLL_SPEED = 12;
             var SCROLL_DIST = 700;
 
             var bg1 = new Sprite(900, 1600);            
-			bg1.image = game_.assets['./img/素材/3/背景3.png']; 
+			bg1.image = game_.assets['./img/stage/3/bg.png']; 
 			bg1.x = 0;                                
 			bg1.y = 0;                                
 			scene.addChild(bg1); 
@@ -131,13 +143,13 @@ window.onload = function() {
             for(var i=0;i<2;i++){
 
                 var p_a = new Sprite(900, 1600);
-                p_a.image = game_.assets['./img/素材/3/オブジェクト1.png'];
+                p_a.image = game_.assets['./img/stage/3/obj1.png'];
                 p_a.x = -350;                                
                 p_a.y = -600;                             
                 p_a.scale(0.9,0.9);
 
                 var p_b = new Sprite(900, 1600);          
-                p_b.image = game_.assets['./img/素材/3/オブジェクト2.png'];
+                p_b.image = game_.assets['./img/stage/3/obj2.png'];
                 p_b.x = -280;                                 
                 p_b.y = 600;                               
                 p_b.scale(0.9,0.9);
@@ -184,6 +196,9 @@ window.onload = function() {
 
             scene.addEventListener(Event.ENTER_FRAME, function() {
                 if(flag){
+                if(audio_intro.ended){
+                    audio_loop.play();
+                }
                 vy+=ay;
                 horiko.y+=vy;
                 if(horiko.lastChild.frame<6){
@@ -217,9 +232,10 @@ window.onload = function() {
             });
             function gameover(){
                 flag = false;
-                audioElem.pause();
+                audio_intro.pause();
+                audio_loop.pause();
                 var waku = new Sprite(150, 130);      
-			    waku.image = game_.assets['./img/素材/ui/waku.png']; 
+			    waku.image = game_.assets['./img/stage/ui/waku.png']; 
 			    waku.x = 375;                                 
 			    waku.y = 450;                                 
                 waku.scale(4.5,4.5);
@@ -232,14 +248,14 @@ window.onload = function() {
                 scene.addChild(scoreLabel);  
 
                 var tap = new Sprite(297, 137);            　
-			    tap.image = game_.assets['./img/素材/ui/tap2.png']; 　
+			    tap.image = game_.assets['./img/stage/ui/tap2.png']; 　
 			    tap.x = 300;                                 　
 			    tap.y = 1000;                                 　
                 tap.scale(1.3,1.3);
 			    scene.addChild(tap); 
 
                 var retry = new Sprite(190, 190);            　
-			    retry.image = game_.assets['./img/素材/ui/retry.png']; 　
+			    retry.image = game_.assets['./img/stage/ui/retry.png']; 　
 			    retry.x = 355;                                 　
 			    retry.y = 1200;                                 　
                 retry.scale(1,1);
@@ -247,8 +263,9 @@ window.onload = function() {
 
                 retry.addEventListener(Event.TOUCH_START, function(e) {
                 removeScene(scene);
-                audioElem.currentTime =0 ;
-                audioElem.play();
+                audio_intro.currentTime =0 ;
+                audio_loop.currentTime =0 ;
+                audio_intro.play();
                 game_.replaceScene(TitleScene());   
             });
             }
@@ -266,42 +283,42 @@ window.onload = function() {
         var SoundCheckScene = function(){
             var scene = new Scene();
             var bg1 = new Sprite(900, 1600);            　
-			bg1.image = game_.assets['./img/素材/3/背景3.png']; 　
+			bg1.image = game_.assets['./img/stage/3/bg.png']; 　
 			bg1.x = 0;                                 　
 			bg1.y = 0;                                 　
 			scene.addChild(bg1);  
 
             
             var waku1 = new Sprite(150, 130);            　
-			waku1.image = game_.assets['./img/素材/ui/waku.png']; 　
+			waku1.image = game_.assets['./img/stage/ui/waku.png']; 　
 			waku1.x = 200;                                 　
 			waku1.y = 800;                                 　
             waku1.scale(2,2);
 			scene.addChild(waku1); 
 
             var waku2 = new Sprite(150, 130);            　
-			waku2.image = game_.assets['./img/素材/ui/waku.png']; 　
+			waku2.image = game_.assets['./img/stage/ui/waku.png']; 　
 			waku2.x = 550;                                 　
 			waku2.y = 800;                                 　
             waku2.scale(2,2);
 			scene.addChild(waku2); 
 
             var bgm = new Sprite(700, 504);            　
-			bgm.image = game_.assets['./img/BGM.png']; 　
+			bgm.image = game_.assets['./img/stage/ui/BGM.png']; 　
 			bgm.x = 100;                                 　
 			bgm.y = 300;                                 　
 			scene.addChild(bgm);
 
 
             var ari = new Sprite(768, 504);            　
-			ari.image = game_.assets['./img/ari.png']; 　
+			ari.image = game_.assets['./img/stage/ui/ari.png']; 　
             ari.scale(0.4,0.4);
 			ari.x = -105;                                 　
 			ari.y = 620;                                 　
 			scene.addChild(ari);
 
             var nasi = new Sprite(768, 504);            　
-			nasi.image = game_.assets['./img/nasi.png']; 　
+			nasi.image = game_.assets['./img/stage/ui/nasi.png']; 　
             nasi.scale(0.4,0.4);
 			nasi.x = 245;                                 　
 			nasi.y = 620;                                 　
@@ -310,12 +327,12 @@ window.onload = function() {
 
 
             ari.addEventListener(Event.TOUCH_END, function(e) {
-                audioElem.play();
+                audio_intro.play();
                 removeScene(scene);
                 game_.replaceScene(TitleScene());    
             });
             nasi.addEventListener(Event.TOUCH_START, function(e) {
-                audioElem.muted =true;
+                audio_intro.muted =true;
                 removeScene(scene);
                 game_.replaceScene(TitleScene());    
             });
@@ -331,3 +348,6 @@ window.onload = function() {
 
 
 };
+
+
+ 
